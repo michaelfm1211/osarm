@@ -127,11 +127,13 @@ void kernel_main(uint64_t dtb_ptr32, uint64_t x1, uint64_t x2, uint64_t x3) {
   rand_init();
   fb_init();
   screen_cls(); // will apply color
+  // COMMENT OUT FOLLOWING TO DISABLE SD CARD
   if(sd_init() != SD_OK) {
     print("FATAL ERROR: SD INITALIZATION ERROR");
     while(1) {
     }
   }
+  // END COMMENTING OUT
 
   print("\r\nWelcome to osARM!\r\n\r\n");
 
