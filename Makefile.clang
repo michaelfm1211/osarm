@@ -1,0 +1,19 @@
+SRCS = $(wildcard *.c)
+OBJS = $(SRCS:.c=.o)
+CFLAGS = --target=aarch64-elf -ffreestanding -nostdinc -nostdlib -isystem std -O2 -Wall -Wextra
+
+all: boot font_psf $(OBJS)
+	ld.lld -m aarch64elf -nostdlib boot.o font_psf.o $(OBJS) -T linker.ld -o myos.elf
+	llvm-objcopy -O binary myos.elf kernel8.img
+
+font_psf: font.psf
+	ld.lld -m aarch64elf -r -b binary -o font_psf.o font.psf
+
+boot:
+	clang --target=aarch64-elf -ffreestanding -nostdinc -nostdlib -c boot.S -o boot.o
+
+%.o: %.c
+	clang $(CFLAGS) -c $< -o $@
+
+run: all
+	qemu-system-aarch64 -M raspi3 -drive file=testing.img,if=sd,format=raw -serial stdio -kernel kernel8.img
